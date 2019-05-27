@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ########################################################################
-#                                                         	 		   #
+#                                                                      #
 # This pipeline is only for processing the multicenter diffusion data. #
-#						   From Qiqi Tong, CBIST, Zhejiang University. #
-#														2019,Hangzhou  #
-#                                                         	 		   #
+#                          From Qiqi Tong, CBIST, Zhejiang University. #
+#                                                       2019,Hangzhou  #
+#                                                                      #
 ########################################################################
 
 DICOMDIR=$1
