@@ -3,7 +3,7 @@
 The code runs on the Linux system. The following softwares are required:
 
 * [__FSL 5.0.11__](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation)
-* [Mricron](https://people.cas.sc.edu/rorden/mricron/install.html)
+* [__Mricron__](https://people.cas.sc.edu/rorden/mricron/install.html)
 
 The script Preprocessing_all_sub.sh calls Preprocessing_diffusion.sh to preprocess the diffusion-weighted images described in the ref.
 
