@@ -16,7 +16,8 @@ dcmname_AP=$4
 dcmname_PA=$5
 acqtime=$6
 
-DCM2NIIDIR=/share/app/imaging/mricron
+dirtemp=`which mricron`
+DCM2NIIDIR=${dirtemp%/*}
 
 echo "============================Start Preprocessing============================"
 # Prepare Folders
