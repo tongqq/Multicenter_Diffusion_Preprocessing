@@ -10,7 +10,7 @@
 
 diffname_AP=SMS_AP_S3P2_1_5ISO_00??
 diffname_PA=SMS_PA_S3P2_1_5ISO_00??
-acqtime=0.05796		#0.69*((146+24)/2-1)/1000		Echo Spacing * (Number of echos - 1)
+acqtime=0.05796		#((146+24)/2-1)*0.69/1000		 (Number of Echos - 1) * Echo Spacing
 
 for subj in 1 2 3;do
 {
