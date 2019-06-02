@@ -20,7 +20,7 @@ DICOMDIR=/hongshan-share/program_brainatlas/data/Multicenter/${inst}TEST00${subj
 PREPRODIR=/hongshan-share/tongqiqi/BrainAtlas/ScientificData/Proc/${inst}_${subj}
 DATADIR=/hongshan-share/tongqiqi/BrainAtlas/ScientificData/UPLOAD_DATA/${inst}_${subj}
 
-bash Preprocessing_diffusion.sh ${DICOMDIR} ${PREPRODIR} ${DATADIR} ${diffname_AP} ${diffname_PA} ${acqtime}
+bash prep_diffusion.sh ${DICOMDIR} ${PREPRODIR} ${DATADIR} ${diffname_AP} ${diffname_PA} ${acqtime}
 
 done
 }&
