@@ -12,14 +12,14 @@ DICOMDIR=$1
 PREPRODIR=$2
 DATADIR=$3
 
-diffname_AP=$4
-diffname_PA=$5
+dcmname_AP=$4
+dcmname_PA=$5
 acqtime=$6
 
 DCM2NIIDIR=/share/app/imaging/mricron
 
-echo "==============Start Preprocessing=============="
-#Prepare Folders
+echo "============================Start Preprocessing============================"
+# Prepare Folders
 if [ -d ${PREPRODIR} ]
 then
     rm -rf ${PREPRODIR}
@@ -28,14 +28,14 @@ fi
 cd ${PREPRODIR}
 
 # Prepare Diffusion Files
-echo "--------------Prepare Diffusion Files--------------"
+echo "--------------------------Prepare Diffusion Files--------------------------"
 for pedir in AP PA;do
 	# convert dicom to nifti
-	eval dcmname=\$diffname_${pedir}
-	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPRODIR} ${DICOMDIR}/${dcmname}
+	eval dcmname=\$dcmname_${pedir}
+	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPRODIR} ${DICOMDIR}/${dcmname} > /dev/null
 
-	# insure data sizes along x,y,z dimensions be even for subsampling in TOPUP
-	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d "." -f1`
+	# ensure data size along each dimension be even for subsampling in TOPUP
+	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d '.' -f1`
 	xsize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim1`
 	ysize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim2`
 	zsize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim3`
@@ -55,9 +55,8 @@ for pedir in AP PA;do
 	mv ${diffname}.bvec ${pedir}.bvec
 done
 
-
 # Prepare Files for Processing
-echo "--------------Prepare Files for Processing--------------"
+echo "-----------------------Prepare Files for Processing------------------------"
 b0cnt=0
 for pedir in AP PA;do
 	bval_all=$(cat ${pedir}.bval | tr -s ' ')
@@ -89,44 +88,44 @@ for pedir in AP PA;do
 done
 
 # TOPUP: Fieldmap Estimation
-echo "--------------TOPUP: Fieldmap Estimation--------------"
+echo "------------------------TOPUP: Fieldmap Estimation-------------------------"
 ${FSLDIR}/bin/topup --imain=b0_APPA.nii.gz --datain=acqparam.txt --config=${FSLDIR}/etc/flirtsch/b02b0.cnf --out=topup_results --iout=hifi_b0.nii.gz
 
 # Prepare Files for EDDY
-echo "--------------Prepare Files for EDDY--------------"
+echo "--------------------------Prepare Files for EDDY---------------------------"
 ${FSLDIR}/bin/bet hifi_b0.nii.gz hifi_b0_brain -m
 ${FSLDIR}/bin/fslmerge -t APPA.nii.gz AP.nii.gz PA.nii.gz
-paste AP.bval PA.bval > APPA.bvals
-paste AP.bvec PA.bvec > APPA.bvecs
+paste AP.bval PA.bval > APPA.bval
+paste AP.bvec PA.bvec > APPA.bvec
 
 # EDDY: Distortion Correction + Motion Correction
 echo "--------------EDDY: Distortion Correction + Motion Correction--------------"
-${FSLDIR}/bin/eddy_openmp --imain=APPA.nii.gz --mask=hifi_b0_brain_mask.nii.gz --acqp=acqparam.txt --index=index.txt --bvecs=APPA.bvecs --bvals=APPA.bvals --topup=topup_results --out=corrected_APPA.nii.gz
+${FSLDIR}/bin/eddy_openmp --imain=APPA.nii.gz --mask=hifi_b0_brain_mask.nii.gz --acqp=acqparam.txt --index=index.txt --bvecs=APPA.bvec --bvals=APPA.bval --topup=topup_results --out=corrected_APPA.nii.gz
 
 # Polishing Files after Processing
-echo "--------------Polishing Files after Processing--------------"
+echo "----------------------Polishing Files after Processing---------------------"
 # seprate corrected_APPA into corrected_AP and corrected_PA
-${FSLDIR}/bin/fslroi corrected_APPA.nii.gz corrected_AP.nii.gz 0 ${num_ap}
-${FSLDIR}/bin/fslroi corrected_APPA.nii.gz corrected_PA.nii.gz ${num_ap} ${num_pa}
+${FSLDIR}/bin/fslroi corrected_APPA.nii.gz corrected_AP.nii.gz 0 ${num_AP}
+${FSLDIR}/bin/fslroi corrected_APPA.nii.gz corrected_PA.nii.gz ${num_AP} ${num_PA}
 cat corrected_APPA.nii.gz.eddy_rotated_bvecs | while read vector
 do
-	bvec_temp=`echo ${vector} | awk '{for(i=1;i<='${num_ap}';i++) {printf "%s ",$i;i++}}'`
+	bvec_temp=`echo ${vector} | tr -s ' ' | awk '{for(i=1;i<='${num_AP}';i++) {printf "%s ",$i}}'`
 	echo ${bvec_temp} >> corrected_AP.bvec
-	bvec_temp=`echo ${vector} | awk '{for(i='$[${num_ap}+1]';i<='$[${num_ap}+${num_pa}]';i++) {printf "%s ",$i;i++}}'`
+	bvec_temp=`echo ${vector} | tr -s ' ' | awk '{for(i='$[${num_AP}+1]';i<='$[${num_AP}+${num_PA}]';i++) {printf "%s ",$i}}'`
 	echo ${bvec_temp} >> corrected_PA.bvec
 done
 
-# combine corrected_AP and corrected_PA to the final files: diffusion.nii.gz, diffusion.bval, diffusion.bvec
-if [ ${num_ap} -gt ${num_pa} ];then
-    min=${num_pa}
+if [ ${num_AP} -gt ${num_PA} ];then
+    min=${num_PA}
 else
-    min=${num_ap}
+    min=${num_AP}
 fi
-frame_ap=(${min} ${num_ap})
-frame_pa=(${min} ${num_pa})
-${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec ${frame_ap} corrected_PA.nii.gz PA.bval corrected_PA.bvec ${frame_pa} ${DATADIR} 0
+echo ${min} ${num_AP} >> matrix_AP.txt
+echo ${min} ${num_PA} >> matrix_PA.txt
+${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec matrix_AP.txt corrected_PA.nii.gz PA.bval corrected_PA.bvec matrix_PA.txt ${PREPRODIR} 0
+
+mv data.nii.gz ${DATADIR}/diffusion.nii.gz
 cp corrected_AP.bvec ${DATADIR}/diffusion.bvec
 cp AP.bval ${DATADIR}/diffusion.bval
 
-echo "==============Preprocessing Compeleted=============="
-
+echo "=========================Preprocessing Compeleted=========================="
