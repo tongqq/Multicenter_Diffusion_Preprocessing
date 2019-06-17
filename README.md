@@ -7,9 +7,9 @@ The code runs on the Linux system. The following softwares are required:
 
 <br>
 
-The script Preprocessing_all_sub.sh calls prep_diffusion.sh to preprocess the diffusion-weighted images described in the ref.
+The script example.sh calls prep_diffusion.sh to preprocess the diffusion-weighted images described in the ref.
 
-The Preprocessing_diffusion.sh is capable to preprocess other diffusion data, in case the images meet the following requirements:
+The prep_diffusion.sh is capable to preprocess other diffusion data, in case the images meet the following requirements:
 
 * The b0 images contain opposite phase encoding directions along AP and PA, at least one image along each direction was acquired.
 * The ACQ readout time of the sequence is known.
