@@ -7,7 +7,7 @@ The code runs on the Linux system. The following softwares are required:
 
 <br>
 
-The script Preprocessing_all_sub.sh calls Preprocessing_diffusion.sh to preprocess the diffusion-weighted images described in the ref.
+The script Preprocessing_all_sub.sh calls prep_diffusion.sh to preprocess the diffusion-weighted images described in the ref.
 
 The Preprocessing_diffusion.sh is capable to preprocess other diffusion data, in case the images meet the following requirements:
 
