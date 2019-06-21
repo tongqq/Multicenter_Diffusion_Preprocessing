@@ -7,7 +7,7 @@ The code runs on the Linux system (tested sucessfully in CentOS 6.7). The follow
 
 <br>
 
-The script example.sh calls prep_diffusion.sh to preprocess the diffusion-weighted images (DWI) described in the ref. In our local-built high-performance computing cluster, it costs 6~8 hours to process such data for one scan.
+The script example.sh calls prep_diffusion.sh to preprocess the diffusion-weighted images (DWI) described in the reference. In our local-built high-performance computing cluster, it costs 6~8 hours to process such data for one scan.
 
 The prep_diffusion.sh is an assembled preprocessing pipeline based on FSL, it mainly uses the TOPUP and EDDY to correct the head motions as well as the distortions caused by the b0 inhomogeneity and eddy current. It can automatically generate all intermediate parameters and files that needed by the FSL commands. This script is also capable to preprocess other diffusion data, in case the images meet the following requirements:
 
