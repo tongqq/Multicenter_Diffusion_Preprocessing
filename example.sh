@@ -11,7 +11,7 @@
 inst = ZJU
 subj = 1
 DICOMDIR = $PWD/Dcm/${inst}TEST00${subj}_${inst}TEST00${subj}
-PREPRODIR = $PWD/Proc/${inst}_${subj}
+PREPRODIR = $PWD/Prep/${inst}_${subj}
 DATADIR = $PWD/DATA/${inst}_${subj}
 
 diffname_AP = SMS_AP_S3P2_1_5ISO_00??
