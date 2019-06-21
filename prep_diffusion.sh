@@ -4,7 +4,7 @@
 #                                                                      #
 # This pipeline is only for processing the multicenter diffusion data. #
 #                          From Qiqi Tong, CBIST, Zhejiang University. #
-#                                                       2019,Hangzhou  #
+#                                                      2019, Hangzhou  #
 #                                                                      #
 ########################################################################
 
