@@ -1,10 +1,9 @@
 ![](https://github.com/tongqq/Multicenter_Diffusion_Preprocessing/blob/master/CBIST_logo.png)
 
-**[CBIST Website](http://cbist.zju.edu.cn/)**
+**[CBIST Website](http://cbist.zju.edu.cn/), Wechat Official Account: CBIST ZJU**
 
-**Wechat Official Account: CBIST ZJU**
 
-## Multicenter Diffusion Preprocessing Code
+# Multicenter Diffusion Preprocessing Code
 
 Overview
 =========================
@@ -14,9 +13,9 @@ The code runs on the Linux system (tested sucessfully in CentOS 6.7). The follow
 * [__Mricron__](https://people.cas.sc.edu/rorden/mricron/install.html)
 * [__Freesurfer__](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall)(only for T1w skull stripping)
 
-<br>
+The script `example.sh` calls 1) `prep_diffusion.sh` to preprocess the diffusion-weighted images (DWI) described in the reference; 2) `prep_t1w.sh` to strip the brain skull on T1 weighted images. In our local-build high-performance computing cluster, it costs 7~9 hours to process such data for one scan.
 
-The script example.sh calls 1) `prep_diffusion.sh` to preprocess the diffusion-weighted images (DWI) described in the reference; 2) `prep_t1w.sh` to strip the brain skull on T1 weighted images. In our local-build high-performance computing cluster, it costs 7~9 hours to process such data for one scan.
+<br>
 
 Feature
 =========================
@@ -29,13 +28,13 @@ Feature
 
 `prep_t1w.sh` is an optional process for skull strippig on the T1 weighted images. We offer three ways to do this, and recommend the first one, you can uncomment the alternatives that fit you.
 
-* Freesurfer: best strippig performance, intensity enhance, but changes the resolution to 1x1x1 mm, and slow (~ 0.5h).
+* Freesurfer: best performance, intensity enhance, but changes the resolution to 1x1x1 mm, and slow (~ 0.5h).
 * FSL: fast, but will lose some gyrus at the top of the brain.
 * AFNI: median spped, similiar performance with FSL.
 
 <br>
 
-### Reference:
-
+Reference
+=========================
 [Tong, Q., He, H., Gong, T., Li, C., Liang, P., Qian, T., ... & Zhong, J. (2019). Reproducibility of multi-shell diffusion tractography on traveling subjects: A multicenter study prospective. Magnetic resonance imaging, 59, 1-9.](https://doi.org/10.1016/j.mri.2019.02.011)
 
