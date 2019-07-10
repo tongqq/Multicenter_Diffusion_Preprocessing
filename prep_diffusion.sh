@@ -1,15 +1,15 @@
 #!/bin/bash
 
-########################################################################
-#                                                                      #
-# This pipeline is only for processing the multicenter diffusion data. #
-#                          From Qiqi Tong, CBIST, Zhejiang University. #
-#                                                      2019, Hangzhou  #
-#                                                                      #
-########################################################################
+#########################################################################
+#																		#
+#  This pipeline is only for processing the multicenter diffusion data.	#
+#							From Qiqi Tong, CBIST, Zhejiang University.	#
+#														2019,Hangzhou	#
+#																		#
+#########################################################################
 
 DICOMDIR=$1
-PREPDIR=$2
+PREPRODIR=$2
 DATADIR=$3
 
 dcmname_AP=$4
@@ -19,20 +19,19 @@ acqtime=$6
 dirtemp=`which mricron`
 DCM2NIIDIR=${dirtemp%/*}
 
-echo "============================Start Preprocessing============================"
+echo "=======================Start Diffusion Preprocessing======================="
 # Prepare Folders
-if [ -d ${PREPDIR} ];then
-    rm -rf ${PREPDIR}
-fi
-mkdir ${PREPDIR}
-cd ${PREPDIR}
+if [ ! -d ${DATADIR} ];then mkdir ${DATADIR};fi
+if [ -d ${PREPRODIR} ];then rm -rf ${PREPRODIR};fi
+mkdir ${PREPRODIR}
+cd ${PREPRODIR}
 
 # Prepare Diffusion Files
 echo "--------------------------Prepare Diffusion Files--------------------------"
 for pedir in AP PA;do
 	# convert dicom to nifti
 	eval dcmname=\$dcmname_${pedir}
-	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPDIR} ${DICOMDIR}/${dcmname} > /dev/null
+	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPRODIR} ${DICOMDIR}/${dcmname} > /dev/null
 
 	# ensure data size along each dimension be even for subsampling in TOPUP
 	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d '.' -f1`
@@ -115,17 +114,15 @@ do
 	echo ${bvec_temp} >> corrected_PA.bvec
 done
 
-if [ ${num_AP} -gt ${num_PA} ];then
-    min=${num_PA}
-else
-    min=${num_AP}
-fi
+if [ ${num_AP} -gt ${num_PA} ];then min=${num_PA};else min=${num_AP};fi
 echo ${min} ${num_AP} >> matrix_AP.txt
 echo ${min} ${num_PA} >> matrix_PA.txt
-${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec matrix_AP.txt corrected_PA.nii.gz PA.bval corrected_PA.bvec matrix_PA.txt ${PREPDIR} 0
+${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec matrix_AP.txt corrected_PA.nii.gz PA.bval corrected_PA.bvec matrix_PA.txt ${PREPRODIR} 0
 
 mv data.nii.gz ${DATADIR}/diffusion.nii.gz
 cp corrected_AP.bvec ${DATADIR}/diffusion.bvec
 cp AP.bval ${DATADIR}/diffusion.bval
+cp hifi_b0_brain_mask.nii.gz ${DATADIR}/diffusion_mask.nii.gz
 
-echo "=========================Preprocessing Compeleted=========================="
+echo "====================Diffusion Preprocessing Compeleted====================="
+
