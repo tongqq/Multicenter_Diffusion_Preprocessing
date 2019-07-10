@@ -15,8 +15,11 @@ The prep_diffusion.sh is an assembled preprocessing pipeline based on FSL, it ma
 * The b0 images should include opposite phase encoding directions along AP and PA, at least one image along each direction is required.
 * The ACQ readout time of the sequence is known.
 
+<br>
+
 The prep_t1w.sh is an optional process for skull strippig on the T1 weighted images. We offer three ways to do this, and recommend the first one, you can uncomment the alternatives that fit you.
-* Freesurfer: best strippig performance, intensity enhance, but will change the resolution to 1x1x1 mm, and slow (~ 0.5h).
+
+* Freesurfer: best strippig performance, intensity enhance, but changes the resolution to 1x1x1 mm, and slow (~ 0.5h).
 * FSL: fast, but will lose some gyrus at the top of the brain.
 * AFNI: median spped, similiar performance with FSL.
 
