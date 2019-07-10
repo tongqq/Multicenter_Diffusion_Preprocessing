@@ -9,7 +9,7 @@
 ########################################################################
 
 DICOMDIR=$1
-PREPRODIR=$2
+PREPDIR=$2
 DATADIR=$3
 
 dcmname_AP=$4
@@ -22,16 +22,16 @@ DCM2NIIDIR=${dirtemp%/*}
 echo "=======================Start Diffusion Preprocessing======================="
 # Prepare Folders
 if [ ! -d ${DATADIR} ];then mkdir ${DATADIR};fi
-if [ -d ${PREPRODIR} ];then rm -rf ${PREPRODIR};fi
-mkdir ${PREPRODIR}
-cd ${PREPRODIR}
+if [ -d ${PREPDIR} ];then rm -rf ${PREPDIR};fi
+mkdir ${PREPDIR}
+cd ${PREPDIR}
 
 # Prepare Diffusion Files
 echo "--------------------------Prepare Diffusion Files--------------------------"
 for pedir in AP PA;do
 	# convert dicom to nifti
 	eval dcmname=\$dcmname_${pedir}
-	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPRODIR} ${DICOMDIR}/${dcmname} > /dev/null
+	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPDIR} ${DICOMDIR}/${dcmname} > /dev/null
 
 	# ensure data size along each dimension be even for subsampling in TOPUP
 	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d '.' -f1`
@@ -117,7 +117,7 @@ done
 if [ ${num_AP} -gt ${num_PA} ];then min=${num_PA};else min=${num_AP};fi
 echo ${min} ${num_AP} >> matrix_AP.txt
 echo ${min} ${num_PA} >> matrix_PA.txt
-${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec matrix_AP.txt corrected_PA.nii.gz PA.bval corrected_PA.bvec matrix_PA.txt ${PREPRODIR} 0
+${FSLDIR}/bin/eddy_combine corrected_AP.nii.gz AP.bval corrected_AP.bvec matrix_AP.txt corrected_PA.nii.gz PA.bval corrected_PA.bvec matrix_PA.txt ${PREPDIR} 0
 
 mv data.nii.gz ${DATADIR}/diffusion.nii.gz
 cp corrected_AP.bvec ${DATADIR}/diffusion.bvec
