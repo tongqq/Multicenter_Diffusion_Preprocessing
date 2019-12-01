@@ -13,7 +13,7 @@ The code runs on the Linux system (tested sucessfully in CentOS 6.7). The follow
 
 * [__FSL 5.0.11__](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation)
 * [__Mricron__](https://people.cas.sc.edu/rorden/mricron/install.html)
-* [__Freesurfer__](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall) (only for T1w skull stripping)
+* [__Freesurfer__](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall) (only for T1w face removal)
 
 The script `example.sh` calls 1) `prep_diffusion.sh` to preprocess the diffusion-weighted images (DWI) described in the reference; 2) `prep_t1w.sh` to strip the brain skull on T1 weighted images. In our local-build high-performance computing cluster, it costs 7~9 hours to process such data for one scan.
 
@@ -27,7 +27,7 @@ The script `example.sh` calls 1) `prep_diffusion.sh` to preprocess the diffusion
 
 <br>
 
-`prep_t1w.sh` is an optional process for skull strippig on the T1 weighted images. We offer three ways to do this, and recommend the first one, you can use the alternatives that fit you.
+`prep_face_removal.sh` is an optional process for skull strippig on the T1 weighted images. We offer three ways to do this, and recommend the first one, you can use the alternatives that fit you.
 
 * Freesurfer: best performance, intensity enhance, but changes the resolution to 1x1x1 mm, and slow (~ 0.5h).
 * FSL: fast, but will lose some gyrus at the top of the brain.
