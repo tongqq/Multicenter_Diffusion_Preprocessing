@@ -18,7 +18,7 @@ DATADIR = $PWD/DATA/${inst}_${subj}
 dcmname_T1=MP2RAGE_WIP900*_UNI-DEN_00??
 diffname_AP = SMS_AP_S3P2_1_5ISO_00??
 diffname_PA = SMS_PA_S3P2_1_5ISO_00??
-acqtime = 0.05796		#((146+24)/2-1)*0.69/1000		 (Number of Echos - 1) * Echo Spacing [us]
+acqtime = 0.050025		#0.345*(146-1)/1000=0.050025		  Echo Spacing * (Number of Echos - 1)  [us]
 
 
 
