@@ -10,6 +10,7 @@
 
 inst = ZJU
 subj = 1
+PROJDIR = $PWD
 DICOMDIR = $PWD/Dcm/${inst}TEST00${subj}_${inst}TEST00${subj}
 PREPDIR = $PWD/Prep/${inst}_${subj}
 DATADIR = $PWD/DATA/${inst}_${subj}
@@ -20,6 +21,7 @@ diffname_PA = SMS_PA_S3P2_1_5ISO_00??
 acqtime = 0.05796		#((146+24)/2-1)*0.69/1000		 (Number of Echos - 1) * Echo Spacing [us]
 
 
-bash prep_t1.sh ${DICOMDIR} ${PREPDIR} ${DATADIR} ${dcmname_T1}
-bash prep_diffusion.sh ${DICOMDIR} ${PREPDIR} ${DATADIR} ${diffname_AP} ${diffname_PA} ${acqtime}
+
+bash prep_diffusion.sh ${PROJDIR} ${DICOMDIR} ${PREPDIR} ${DATADIR} ${diffname_AP} ${diffname_PA} ${acqtime}
+bash prep_face_removal.sh ${PROJDIR} ${DICOMDIR} ${PREPDIR} ${DATADIR} ${dcmname_T1}
 
