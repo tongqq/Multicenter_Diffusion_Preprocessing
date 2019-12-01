@@ -8,19 +8,17 @@
 #                                                                      #
 ########################################################################
 
-DICOMDIR=$1
-PREPDIR=$2
-DATADIR=$3
+PROJDIR=$1
+DICOMDIR=$2
+PREPDIR=$3
+DATADIR=$4
 
-dcmname_T1=$4
+dcmname_T1=$5
 
 dirtemp=`which mricron`
 DCM2NIIDIR=${dirtemp%/*}
 
-
 echo "===========================Start T1 Preprocessing=========================="
-if [ ! -d ${DATADIR} ];then mkdir ${DATADIR};fi
-if [ ! -d ${PREPDIR} ];then mkdir ${PREPDIR};fi
 
 # convert DCM to NIfTI
 echo "----------------------------Convert DCM to NIfTI---------------------------"
@@ -30,25 +28,24 @@ cd ${PREPDIR}
 t1name=`ls -t |head -n1|awk '{print $0}'`
 if [ -f ${t1name} ];then
     rm ${t1name:1}
-    rm ${t1name:2}
-    mv ${t1name} T1.nii.gz
+    mv ${t1name:2} T1w_orig.nii.gz
+    mv ${t1name} T1w.nii.gz
 fi
 
-# Skull Stripping
-echo "------------------------------Skull Stripping------------------------------"
+cd ${PREPDIR}
+# Face Removal
+echo "--------------------------------Face Removal-------------------------------"
 ## Freesurfer
-if [ -d ${PREPDIR}/freesurfer ];then rm -rf ${PREPDIR}/freesurfer;fi
-recon-all -subject freesurfer -sd ${PREPDIR} -i ${PREPDIR}/T1.nii.gz -autorecon1 -openmp 4
-mri_convert freesurfer/mri/brainmask.mgz ${DATADIR}/T1.nii.gz
+mri_deface T1w_orig.nii.gz ${PROJDIR}/talairach_mixed_with_skull.gca ${PROJDIR}/face.gca ${DATADIR}/T1w.nii.gz
 
-## FSL
-#bet T1.nii.gz ${DATADIR}/T1.nii.gz -f 0.2 -g -0.2
-
-## AFNI
-#3dWarp -deoblique -prefix T1.nii.gz T1.nii.gz -overwrite
-#3dUnifize -input T1.nii.gz -prefix T1_u.nii.gz -overwrite
-#3dSkullStrip -input T1_u.nii.gz -prefix T1_ns.nii.gz -orig_vol -overwrite -push_to_edge
-#mv T1_ns.nii.gz ${DATADIR}/T1.nii.gz
+# Apply Face Stripping to Diffusion
+echo "-----------------------------Apply to Diffusion----------------------------"
+bet T1w_orig.nii.gz T1w_brain.nii.gz
+flirt -in hifi_b0_brain.nii.gz -ref T1w_brain.nii.gz -dof 12 -omat d2t.mat
+convert_xfm -inverse d2t.mat -omat t2d.mat
+flirt -in ${DATADIR}/T1w.nii.gz -ref hifi_b0_brain.nii.gz -applyxfm -init t2d.mat -out T1w_diff.nii.gz -interp nearestneighbour
+mv ${DATADIR}/diffusion.nii.gz diffusion.nii.gz
+fslmaths diffusion.nii.gz -mas T1w_diff.nii.gz ${DATADIR}/diffusion.nii.gz
 
 echo "========================T1 Preprocessing Compeleted========================"
 
