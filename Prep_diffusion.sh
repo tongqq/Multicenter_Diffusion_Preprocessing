@@ -17,13 +17,18 @@ dcmname_AP=$5
 dcmname_PA=$6
 acqtime=$7
 
+if [ ! ${acqtime} ];then
+	acqtime=1
+	echo -e "\E[33;40mWarning: It is recommanded to define an accurate 'acqtime' for fieldmap estimation \E[0m"
+fi
+
 dirtemp=`which mricron`
 DCM2NIIDIR=${dirtemp%/*}
 MATLABDIR=/hongshan-share/software-installation-path/matlab2017
 
 echo "=======================Start Diffusion Preprocessing======================="
 # Prepare Folders
-if [ ! -d ${DATADIR} ];then mkdir ${DATADIR};fi
+if [ ! -d ${DATADIR} ];then mkdir -p ${DATADIR};fi
 if [ -d ${PREPDIR} ];then rm -rf ${PREPDIR};fi
 mkdir ${PREPDIR}
 cd ${PREPDIR}
@@ -34,35 +39,36 @@ for pedir in AP PA;do
 	# convert dicom to nifti
 	eval dcmname=\$dcmname_${pedir}
 	${DCM2NIIDIR}/dcm2nii -d n -e n -o ${PREPDIR} ${DICOMDIR}/${dcmname} > /dev/null
+	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d '.' -f1`
 	
 	# ensure data size along each dimension be even for subsampling in TOPUP
-	diffname=`ls -t |head -n1|awk '{print $0}'|cut -d '.' -f1`
 	xsize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim1`
 	ysize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim2`
 	zsize=`${FSLDIR}/bin/fslval ${diffname}.nii.gz dim3`
-	if [ $[${xsize} % 2] -eq 1 ];then
-		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 $[${xsize}-1] 0 -1 0 -1 0 -1
+	if [ $[$((${xsize})) % 2] -eq 1 ];then
+		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 $[$((${xsize}))-1] 0 -1 0 -1 0 -1
 	fi
-	if [ $[${ysize} % 2] -eq 1 ];then
-		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 -1 0 $[${ysize}-1] 0 -1 0 -1
+	if [ $[$((${ysize})) % 2] -eq 1 ];then
+		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 -1 0 $[$((${ysize}))-1] 0 -1 0 -1
 	fi
-	if [ $[${zsize} % 2] -eq 1 ];then
-		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 -1 0 -1 0 $[${zsize}-1] 0 -1
+	if [ $[$((${zsize})) % 2] -eq 1 ];then
+		${FSLDIR}/bin/fslroi ${diffname}.nii.gz ${diffname}.nii.gz 0 -1 0 -1 0 $[$((${zsize}))-1] 0 -1
 	fi
 	
 	# rename filename
 	mv ${diffname}.bval ${pedir}.bval
 	mv ${diffname}.bvec ${pedir}.bvec
-
-echo "--------------------------------Denoise ${pedir}---------------------------------"
-	dwidenoise -force ${diffname}.nii.gz ${pedir}.nii.gz -noise noise.mif
+	cp ${diffname}.nii.gz ${pedir}.nii.gz
 	
+# It's optional (require MRtrix3)
+echo "--------------------------------Denoise ${pedir}---------------------------------"
+	dwidenoise -force ${pedir}.nii.gz ${pedir}.nii.gz -noise noise.mif
+	
+# It's optional too (require Matlab)
 echo "---------------------------Remove Gibbs-ring ${pedir}----------------------------"
-	gunzip ${pedir}.nii.gz
 	cd ${PROJDIR}
-	${MATLABDIR}/bin/matlab -nodesktop -nosplash -nojvm -r "Prep_gibbsring('${PREPDIR}/${pedir}.nii');quit"
+	${MATLABDIR}/bin/matlab -nodesktop -nosplash -nojvm -r "Prep_gibbsring('${PROJDIR}/reisert-unring/matlab','${PREPDIR}/${pedir}.nii.gz');quit"
 	cd ${PREPDIR}
-	gzip ${pedir}.nii
 done
 
 # Prepare Files for Processing
@@ -71,9 +77,9 @@ b0cnt=0
 for pedir in AP PA;do
 	bval_all=$(cat ${pedir}.bval | tr -s ' ')
 	num_diffusion=`${FSLDIR}/bin/fslval ${pedir}.nii.gz dim4`
-	eval num_${pedir}=${num_diffusion}
+	eval num_${pedir}=$((${num_diffusion}))
 	
-	for num in $(seq 1 ${num_diffusion} );do
+	for num in $(seq 1 $((${num_diffusion})) );do
 		bval=`echo ${bval_all} | cut -d ' ' -f ${num}`
 		if [ ${bval} -lt 50 ];then
 			# extract b0 frames to b0_APPA.nii.gz
