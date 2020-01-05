@@ -11,7 +11,7 @@
 ### Overview
 The code runs on the Linux system (tested sucessfully in CentOS 6.7). The following softwares are required:
 
-* [__FSL 5.0.11__](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation)
+* [__FSL 5.0.11 or later__](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation)
 * [__Mricron__](https://people.cas.sc.edu/rorden/mricron/install.html)
 * [__Freesurfer__](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall) (only for face removal)
 * [__MRtrix3__](https://www.mrtrix.org/download/) (optional)
