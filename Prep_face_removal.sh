@@ -36,7 +36,7 @@ cd ${PREPDIR}
 # Face Removal
 echo "--------------------------------Face Removal-------------------------------"
 ## Freesurfer
-mri_deface T1w_orig.nii.gz ${PROJDIR}/talairach_mixed_with_skull.gca ${PROJDIR}/face.gca ${DATADIR}/T1w.nii.gz
+mri_deface T1w_orig.nii.gz ${FREESURFER_HOME}/average/talairach_mixed_with_skull.gca ${FREESURFER_HOME}/average/face.gca ${DATADIR}/T1w.nii.gz
 
 # Apply Face Stripping to Diffusion
 echo "-----------------------------Apply to Diffusion----------------------------"
