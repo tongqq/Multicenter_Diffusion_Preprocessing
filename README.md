@@ -17,7 +17,7 @@ The code runs on the Linux system (tested sucessfully in CentOS 6.7). The follow
 * [__MRtrix3__](https://www.mrtrix.org/download/) (optional)
 * [__Matlab__](https://www.mathworks.com/products/get-matlab.html) (optional)
 
-The script `example.sh` calls 1) `prep_diffusion.sh` to preprocess the diffusion-weighted images (DWI) described in the reference; 2) `prep_t1w.sh` to strip the brain skull on T1-weighted images. In our local-build high-performance computing cluster, it costs 7~9 hours to process such data for one scan.
+The script `example.sh` calls 1) `prep_diffusion.sh` to preprocess the diffusion-weighted images (DWI) described in the reference; 2) `prep_face_removal.sh` to strip the brain skull on both DWI and T1-weighted images. In our local-build high-performance computing cluster, it costs 7~9 hours to process such data for one scan.
 
 <br>
 
